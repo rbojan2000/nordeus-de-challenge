@@ -1,0 +1,2 @@
+PING_TRESHOLD_SEC = 60
+APP_NAME = "load"
