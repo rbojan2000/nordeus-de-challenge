@@ -1,5 +1,5 @@
 import click
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 from transformation.common import save_dataset
 from transformation.processor import (
     transform_match,
