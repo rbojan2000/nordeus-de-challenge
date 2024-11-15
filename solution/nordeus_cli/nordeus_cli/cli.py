@@ -1,13 +1,15 @@
 import click
 import pandas as pd
-from nordeus_cli.utils import validate_date
 from nordeus_cli.db_client import DBClient
 from nordeus_cli.query_generator import QueryGenerator
+from nordeus_cli.utils import validate_date
 from tabulate import tabulate
+
 
 @click.group()
 def cli():
     pass
+
 
 @click.command()
 @click.option(
@@ -16,15 +18,15 @@ def cli():
     type=click.Choice(["user-level", "game-level"]),
     help="Data API",
 )
-@click.option("--user-id", required=True, help="User ID for the query")
+@click.option("--user-id", required=False, help="User ID for the query")
 @click.option(
     "--date",
     required=False,
-    callback = validate_date,
-    help="Date for the query (YYYY-MM-DD)"
+    callback=validate_date,
+    help="Date for the query (YYYY-MM-DD)",
 )
 def query(api, user_id, date):
-    click.echo(click.style(f"API Endpoint: {api}", fg="red"))
+    click.echo(click.style(f"API Endpoint: {api}", fg="bright_blue"))
     click.echo(click.style(f"User ID: {user_id}", fg="green"))
 
     if date:

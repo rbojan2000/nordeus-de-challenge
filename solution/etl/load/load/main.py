@@ -22,7 +22,7 @@ def run(job: str) -> None:
 
     aggregator = Aggregator(spark)
     client = DBClient()
-    
+
     if job == "match-stats":
         df = aggregator.calculate_match_stats()
 

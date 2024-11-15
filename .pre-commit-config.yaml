@@ -11,19 +11,19 @@ repos:
     hooks:
       - id: flake8
         name: flake8
-        entry: poetry run flake8 solution/nordeus_cli_de_c
+        entry: poetry run flake8 solution/nordeus_cli
         language: system
         always_run: true
         pass_filenames: false
       - id: isort
         name: isort
-        entry: poetry run isort solution/nordeus_cli_de_c
+        entry: poetry run isort solution/nordeus_cli
         language: system
         always_run: true
         pass_filenames: false
       - id: black
         name: black
-        entry: poetry run black solution/nordeus_cli_de_c
+        entry: poetry run black solution/nordeus_cli
         language: system
         always_run: true
         pass_filenames: false

@@ -12,11 +12,11 @@ from pyspark.sql.window import Window
 
 
 class Aggregator:
-    
+
     def __init__(self, spark: SparkSession) -> None:
         self.spark = spark
         self.ping_treshold_sec = PING_TRESHOLD_SEC
-        
+
     def calculate_session_stats(self) -> DataFrame:
         window_user_spec = Window.partitionBy("user_id").orderBy("session_timestamp")
 
