@@ -7,7 +7,7 @@ from load.paths import (
 from load.constants import PING_TRESHOLD_SEC
 from load.schema import match_schema, registration_schema, session_schema
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, from_utc_timestamp, lag, unix_timestamp, when
+from pyspark.sql.functions import col, from_utc_timestamp, lag, unix_timestamp, when, sum
 from pyspark.sql.window import Window
 
 
@@ -61,6 +61,10 @@ class Aggregator:
                 "time_diff",
                 unix_timestamp(col("session_timestamp"))
                 - unix_timestamp(col("previous_session_timestamp")),
+            )
+            .withColumn(
+                "session_duration",
+                sum("time_diff").over(window_user_spec)
             )
             .withColumn(
                 "is_new_session",

@@ -62,6 +62,16 @@ class QueryGenerator:
                         AND is_new_session = true
                         GROUP BY user_id
                     ),
+                    session_duration as (
+                        SELECT 
+                                user_id,
+                                COUNT(*) * 60 AS total_seconds
+                        FROM user_session_stats
+                        WHERE is_new_session = False
+                        AND user_id = '{user_id}'
+                        AND DATE(session_timestamp) = DATE('{date}')
+                        group by(user_id)
+                    ),
                     registration_info AS (
                         SELECT
                             user_id,
@@ -75,10 +85,12 @@ class QueryGenerator:
                         u.user_id,
                         DATE('{date}') - DATE(u.last_login) AS days_since_last_login,
                         COALESCE(d.session_count, 0) AS number_of_sessions,
+                        COALESCE(sd.total_seconds, 0) AS total_session_duration,
                         r.registration_local_datetime,
                         r.country
                     FROM user_logins u
                     LEFT JOIN sessions_count d ON u.user_id = d.user_id
+                    LEFT JOIN session_duration sd ON u.user_id = sd.user_id
                     LEFT JOIN registration_info r on u.user_id = r.user_id
                 )
                 SELECT
@@ -89,7 +101,12 @@ class QueryGenerator:
                     s.number_of_sessions,
                     COALESCE(g.time_spent_in_game, 0) AS time_spent_in_game,
                     COALESCE(g.total_points_won_home, 0) AS total_points_won_home,
-                    COALESCE(g.total_points_won_away, 0) AS total_points_won_away
+                    COALESCE(g.total_points_won_away, 0) AS total_points_won_away,
+                    CASE 
+                        WHEN COALESCE(s.total_session_duration, 0) > 0 THEN 
+                            (COALESCE(CAST(g.time_spent_in_game AS FLOAT), 0) / CAST(s.total_session_duration AS FLOAT)) * 100
+                        ELSE 0
+                    END AS match_time_as_percentage_of_total_game_time
                 FROM game_stats g
                 FULL JOIN session_stats s ON g.user_id = s.user_id;
             """
@@ -142,6 +159,15 @@ class QueryGenerator:
                         AND is_new_session = true
                         GROUP BY user_id
                     ),
+                    session_duration as (
+                        SELECT 
+                            user_id,
+                            COUNT(*) * 60 AS total_seconds
+                        FROM user_session_stats
+                        WHERE is_new_session = False
+                        AND user_id = '{user_id}'
+                        group by(user_id)
+                    ),
                     registration_info AS (
                         SELECT
                             user_id,
@@ -155,23 +181,30 @@ class QueryGenerator:
                         u.user_id,
                         DATE(NOW()) - DATE(u.last_login) AS days_since_last_login,
                         COALESCE(d.session_count, 0) AS number_of_sessions,
+                        COALESCE(sd.total_seconds, 0) AS total_session_duration,
                         r.registration_local_datetime,
                         r.country
                     FROM user_logins u
                     LEFT JOIN sessions_count d ON u.user_id = d.user_id
+	                LEFT JOIN session_duration sd ON u.user_id = sd.user_id
                     LEFT JOIN registration_info r on u.user_id = r.user_id
                 )
                 SELECT
-                    g.user_id,
+                    s.user_id,
                     s.country,
                     s.registration_local_datetime,
                     s.days_since_last_login,
                     s.number_of_sessions,
-                    g.time_spent_in_game,
-                    g.total_points_won_home,
-                    g.total_points_won_away
+                    COALESCE(g.time_spent_in_game, 0) AS time_spent_in_game,
+                    COALESCE(g.total_points_won_home, 0) AS total_points_won_home,
+                    COALESCE(g.total_points_won_away, 0) AS total_points_won_away,
+                    CASE 
+                        WHEN COALESCE(s.total_session_duration, 0) > 0 THEN 
+                            (COALESCE(CAST(g.time_spent_in_game AS FLOAT), 0) / CAST(s.total_session_duration AS FLOAT)) * 100
+                        ELSE 0
+                    END AS match_time_as_percentage_of_total_game_time
                 FROM game_stats g
-                LEFT JOIN session_stats s ON g.user_id = s.user_id;
+                FULL JOIN session_stats s ON g.user_id = s.user_id;
             """
 
         return query
@@ -253,7 +286,7 @@ class QueryGenerator:
 				    COALESCE(ss.active_users, 0) AS active_users,
 				    COALESCE(ss.number_of_sessions, 0) AS number_of_sessions,
 				    COALESCE(ss.average_number_of_sessions, 0) AS average_number_of_sessions,
-				    COALESCE(ARRAY_AGG(gs.user_id), ARRAY['No user']) AS users_with_max_points
+				    ARRAY_AGG(CAST (gs.user_id AS TEXT)) AS users_with_max_points
                 FROM
                     session_stats ss
                 left join
@@ -330,7 +363,7 @@ class QueryGenerator:
                     ss.active_users,
                     ss.number_of_sessions,
                     ss.average_number_of_sessions,
-                    ARRAY_AGG(gs.user_id) AS users_with_max_points
+                    ARRAY_AGG(CAST (gs.user_id AS TEXT)) AS users_with_max_points
                 FROM
                     session_stats ss,
                     game_stats gs
