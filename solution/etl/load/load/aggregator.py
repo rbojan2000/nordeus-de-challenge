@@ -64,8 +64,9 @@ class Aggregator:
             )
             .withColumn(
                 "is_new_session",
-                when(col("time_diff") < self.ping_treshold_sec, False).otherwise(True),
+                when(col("time_diff") <= self.ping_treshold_sec, False).otherwise(True),
             )
+            .orderBy("session_timestamp")
         )
 
         return user_session_stats_df
@@ -76,7 +77,7 @@ class Aggregator:
         registrations_with_local_timezones_df = registrations_df.join(
             other=timezones_df, how="left", on="country"
         ).withColumn(
-            "local_datetime",
+            "registration_local_datetime",
             from_utc_timestamp(timestamp=col("registration_timestamp"), tz=col("timezone")),
         )
 

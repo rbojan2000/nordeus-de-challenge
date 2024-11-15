@@ -21,10 +21,8 @@ def transform_registration(spark: SparkSession, dataset: str) -> DataFrame:
 
 
 def transform_session(spark: SparkSession, dataset: str) -> DataFrame:
-    additional_filters = col("event_data.type").isin(["session_start", "session_end"])
-
     df = (
-        read_and_process_data(spark, session_schema, dataset, additional_filters)
+        read_and_process_data(spark, session_schema, dataset)
         .select(
             col("event_id"),
             col("event_data.user_id").alias("user_id"),

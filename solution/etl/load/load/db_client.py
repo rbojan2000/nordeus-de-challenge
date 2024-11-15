@@ -7,14 +7,14 @@ class DBClient():
         self.port = DB_PORT
         self.name = DB_NAME
         self.user = DB_USER
-        self.password = DB_PASSWORD        
+        self.password = DB_PASSWORD
         self.driver = DB_DRIVER
         self.url = DB_URL
 
-    def write(self, dataset: DataFrame, table_name: str) -> None:            
+    def write(self, dataset: DataFrame, table_name: str) -> None:
         properties = {
             "user": self.user,
             "password": self.password,
-            "driver": self.driver 
+            "driver": self.driver
         }
         dataset.write.jdbc(DB_URL, table_name, mode="overwrite", properties=properties)
