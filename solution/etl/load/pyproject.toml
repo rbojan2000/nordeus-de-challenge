@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.8"
 pyspark = "^3.5.3"
 click = "^8.1.7"
+pytest = "^8.3.3"
+pyspark-test = "^0.2.0"
 
 
 [build-system]

@@ -6,15 +6,17 @@ from load.paths import (
 )
 from load.constants import PING_TRESHOLD_SEC
 from load.schema import match_schema, registration_schema, session_schema
+from load.joiner import Joiner
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, from_utc_timestamp, lag, unix_timestamp, when, sum
+from pyspark.sql.types import IntegerType
+from pyspark.sql.functions import col, lag, unix_timestamp, when, sum
 from pyspark.sql.window import Window
 
 
-class Aggregator:
-
+class Analyzer:
     def __init__(self, spark: SparkSession) -> None:
         self.spark = spark
+        self.joiner = Joiner()
         self.ping_treshold_sec = PING_TRESHOLD_SEC
 
     def calculate_session_stats(self) -> DataFrame:
@@ -26,7 +28,7 @@ class Aggregator:
             str(REGISTRATION_DATASET), schema=registration_schema
         ).select("country", "user_id", "registration_timestamp")
 
-        registrations_with_local_timezones_df = self.join_registrations_with_local_timezones(
+        registrations_with_local_timezones_df = self.joiner.join_registrations_with_local_timezones(
             registrations_df, timezones_df
         )
 
@@ -44,6 +46,7 @@ class Aggregator:
         matches_df = self.spark.read.parquet(str(MATCH_DATASET), schema = match_schema)
 
         match_stats_df = matches_df \
+            .transform(self.joiner.pair_matches) \
             .transform(self.calculate_match_time) \
             .transform(self.calculate_user_match_points)
 
@@ -75,17 +78,14 @@ class Aggregator:
 
         return user_session_stats_df
 
-    def join_registrations_with_local_timezones(
-        self, registrations_df: DataFrame, timezones_df: DataFrame
-    ) -> DataFrame:
-        registrations_with_local_timezones_df = registrations_df.join(
-            other=timezones_df, how="left", on="country"
-        ).withColumn(
-            "registration_local_datetime",
-            from_utc_timestamp(timestamp=col("registration_timestamp"), tz=col("timezone")),
-        )
+    def calculate_match_time(self, matches_df: DataFrame) -> DataFrame:
+        matches_df_with_match_duration = matches_df \
+            .withColumn(
+                "match_duration",
+                unix_timestamp(col("end_time")) - unix_timestamp(col("start_time")),
+            )
 
-        return registrations_with_local_timezones_df
+        return matches_df_with_match_duration
 
     def calculate_user_match_points(self, match_stats_df: DataFrame) -> DataFrame:
         match_stats_with_user_points_df = match_stats_df.withColumn(
@@ -101,25 +101,3 @@ class Aggregator:
         )
 
         return match_stats_with_user_points_df
-
-    def calculate_match_time(self, matches_df: DataFrame) -> DataFrame:
-        match_start_df = matches_df.filter(col("match_status") == "match_start").select(
-            "match_id",
-            "home_user_id",
-            "away_user_id",
-            col("match_timestamp").alias("start_time"),
-        )
-
-        match_end_df = matches_df.filter(col("match_status") == "match_end").select(
-            "match_id",
-            "home_goals_scored",
-            "away_goals_scored",
-            col("match_timestamp").alias("end_time"),
-        )
-
-        paired_matches = match_start_df.join(match_end_df, "match_id").withColumn(
-            "match_duration",
-            unix_timestamp(col("end_time")) - unix_timestamp(col("start_time")),
-        )
-
-        return paired_matches

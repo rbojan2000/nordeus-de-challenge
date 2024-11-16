@@ -39,3 +39,30 @@ match_schema = StructType(
         StructField("match_status", StringType(), nullable=False),
     ]
 )
+
+match_stats_schema = StructType(
+    [
+        StructField("match_id", StringType(), False),
+        StructField("home_user_id", StringType(), False),
+        StructField("away_user_id", StringType(), False),
+        StructField("home_goals_scored", IntegerType(), False),
+        StructField("away_goals_scored", IntegerType(), False),
+        StructField("start_time", TimestampType(), False),
+        StructField("end_time", TimestampType(), False),
+        StructField("match_duration", LongType(), True),
+        StructField("home_user_points", IntegerType(), True),
+        StructField("away_user_points", IntegerType(), True),
+    ]
+)
+
+paired_matches_schema = StructType(
+    [
+        StructField("match_id", StringType(), False),
+        StructField("home_user_id", StringType(), False),
+        StructField("away_user_id", StringType(), False),
+        StructField("start_time", TimestampType(), False),
+        StructField("home_goals_scored", IntegerType(), False),
+        StructField("away_goals_scored", IntegerType(), False),
+        StructField("end_time", TimestampType(), False),
+    ]
+)
