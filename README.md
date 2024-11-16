@@ -58,7 +58,7 @@ The solution consists of two modules:
 
 ## Architecture
 Overall Architecture is shown in <i> Diagram-1 </i> below:
-[![](/docs/nordeus-de-c-s-architecture.png)](/docs/nordeus-de-c-s-architecture.png)
+[![](/docs/solution-architecture.png)](/docs/solution-architecture.png)
 <p align="center"> <i>Diagram-1</i></p>
 
 ## ETL

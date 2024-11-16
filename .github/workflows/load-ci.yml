@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    name: Poetry pytest
+    name: Poetry Pytest
     runs-on: ubuntu-latest
 
     steps:
