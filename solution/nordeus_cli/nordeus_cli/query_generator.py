@@ -289,8 +289,8 @@ class QueryGenerator:
 				    ARRAY_AGG(CAST (gs.user_id AS TEXT)) AS users_with_max_points
                 FROM
                     session_stats ss
-                left join
-                    game_stats gs on true
+                CROSS JOIN
+                    game_stats gs
                 group by ss.active_users, ss.number_of_sessions, ss.average_number_of_sessions
             """
         else:

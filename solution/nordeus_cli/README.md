@@ -22,7 +22,7 @@ Ensure the following tools are installed on your system:
    ```sh
     $ poetry install
    ```
-4. Query the data from database using `nordeus-cli`. For detailed usage instructions, see the <a href = "https://github.com/rbojan2000/nordeus-de-challenge/blob/main/solution/nordeus_cli/README.md">nordeus-cli/README.md </a>
+4. Query the data from database using `nordeus-cli`
    ```sh
     $ poetry run nordeus-cli
    ```
