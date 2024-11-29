@@ -15,9 +15,9 @@ Ensure the following tools are installed on your system:
     $ virtualenv venv
    ```
 2. Activate virtual environment
-    ```sh
+   ```sh
     $ source venv/bin/activate
-    ```
+   ```
 3. Install all python libraries
    ```sh
     $ poetry install
@@ -29,7 +29,7 @@ Ensure the following tools are installed on your system:
 
 ## Usage
    ```sh
-    $  poetry run nordeus-cli query [OPTIONS]
+    $ poetry run nordeus-cli query [OPTIONS]
    ```
 [OPTIONS]: 
    - api: Specify the API type (user-level or game-level).
@@ -38,9 +38,9 @@ Ensure the following tools are installed on your system:
 
 ### Examples
    ```sh
-    $  poetry run nordeus-cli query --api user-level --user-id d7f20e07-ed42-02ed-c4bb-895c608099f6 --date 2024-10-19
-    $  poetry run nordeus-cli query --api user-level --user-id d7f20e07-ed42-02ed-c4bb-895c608099f6
-    $  poetry run nordeus-cli query --api game-level --date 2024-10-13
-    $  poetry run nordeus-cli query --api game-level
+    $ poetry run nordeus-cli query --api user-level --user-id d7f20e07-ed42-02ed-c4bb-895c608099f6 --date 2024-10-19
+    $ poetry run nordeus-cli query --api user-level --user-id d7f20e07-ed42-02ed-c4bb-895c608099f6
+    $ poetry run nordeus-cli query --api game-level --date 2024-10-13
+    $ poetry run nordeus-cli query --api game-level
    ```
 

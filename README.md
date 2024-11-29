@@ -94,7 +94,7 @@ Curated Datasets:
 | `event_id`                | Unique identifier representing a registration event                                                   |
 | `user_id`                 | Unique identifier representing a user                                                                 |
 | `country`                 | Country that the user comes from                                                                      |
-| `device_os`               | Unique identifier representing a user                                                                 |
+| `device_os`               | Os of the device user registered from. Valid values are iOS, Android, and Web                         |
 | `registration_timestamp`  | Time of registration represented as Unix time                                                         |
 
 
@@ -182,16 +182,16 @@ Ensure the following tools are installed on your system:
    ```
 3. Change directory to `nordeus-cli`
    ```sh
-    $ cd solution/nordeus_clis
+    $ cd solution/nordeus_cli
    ```
 4. Create virtual environment in project. E.g.:
    ```sh
     $ virtualenv venv
    ```
 5. Activate virtual environment
-    ```sh
+   ```sh
     $ source venv/bin/activate
-    ```
+   ```
 6. Install all python libraries
    ```sh
     $ poetry install
