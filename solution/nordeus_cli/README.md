@@ -31,7 +31,7 @@ Ensure the following tools are installed on your system:
    ```sh
     $ poetry run nordeus-cli query [OPTIONS]
    ```
-[OPTIONS]: 
+[OPTIONS]:
    - api: Specify the API type (user-level or game-level).
    - date: Provide the date for the query.
    - user-id: Specify the user ID for the query.
@@ -43,4 +43,3 @@ Ensure the following tools are installed on your system:
     $ poetry run nordeus-cli query --api game-level --date 2024-10-13
     $ poetry run nordeus-cli query --api game-level
    ```
-

@@ -1,8 +1,8 @@
 import click
-from load.constants import APP_NAME
-from load.paths import POSTGRESQL_JAR_PATH
 from load.analyzer import Analyzer
+from load.constants import APP_NAME
 from load.db_client import DBClient
+from load.paths import POSTGRESQL_JAR_PATH
 from load.utils import get_table_name_by_job
 from pyspark.sql import SparkSession
 
@@ -15,10 +15,11 @@ from pyspark.sql import SparkSession
     help="Specify the job",
 )
 def run(job: str) -> None:
-    spark = SparkSession.builder \
-        .appName(APP_NAME) \
-        .config("spark.jars", POSTGRESQL_JAR_PATH) \
+    spark = (
+        SparkSession.builder.appName(APP_NAME)
+        .config("spark.jars", POSTGRESQL_JAR_PATH)
         .getOrCreate()
+    )
 
     analyzer = Analyzer(spark)
     client = DBClient()
@@ -29,9 +30,7 @@ def run(job: str) -> None:
     elif job == "user-session-stats":
         df = analyzer.calculate_session_stats()
 
-
     df.show()
-
     table_name = get_table_name_by_job(job)
     client.write(dataset = df, table_name = table_name)
 

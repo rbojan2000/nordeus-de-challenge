@@ -1,15 +1,17 @@
-import pytest
-from pyspark.sql import SparkSession, DataFrame
-from pyspark_test import assert_pyspark_df_equal
 from datetime import datetime
+
+import pytest
 from load.joiner import Joiner
 from load.schema import paired_matches_schema
+from pyspark.sql import DataFrame, SparkSession
+from pyspark_test import assert_pyspark_df_equal
 from tests.data import DataGenerator
+
 
 class TestJoiner:
     @pytest.fixture(scope="session")
     def spark(self) -> SparkSession:
-        return SparkSession.builder.appName('load_test_session').getOrCreate()
+        return SparkSession.builder.appName("load_test_session").getOrCreate()
 
     @pytest.fixture(scope="session")
     def joiner(self) -> Joiner:
@@ -21,7 +23,7 @@ class TestJoiner:
 
     def test_pair_matches(self, spark, joiner, test_data) -> None:
         matches_df: DataFrame = test_data.get_matches_test_data()
-        
+
         expected_data = [
             {
                 "match_id": "290d5196-9123-11ef-b02f-bafd2d38177c",
@@ -37,8 +39,10 @@ class TestJoiner:
         result_df: DataFrame = joiner.pair_matches(matches_df)
         result_df.printSchema()
         result_df.show()
-        
-        expected_df = spark.createDataFrame(data=expected_data, schema = paired_matches_schema)
+
+        expected_df = spark.createDataFrame(
+            data=expected_data, schema=paired_matches_schema
+        )
         expected_df.printSchema()
 
         assert_pyspark_df_equal(result_df, expected_df)

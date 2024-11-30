@@ -1,10 +1,11 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, from_utc_timestamp
 
-class Joiner():
+
+class Joiner:
     def __init__(self):
         pass
-            
+
     def join_registrations_with_local_timezones(
         self, registrations_df: DataFrame, timezones_df: DataFrame
     ) -> DataFrame:
@@ -12,11 +13,20 @@ class Joiner():
             other=timezones_df, how="left", on="country"
         ).withColumn(
             "registration_local_datetime",
-            from_utc_timestamp(timestamp=col("registration_timestamp"), tz=col("timezone")),
+            from_utc_timestamp(
+                timestamp=col("registration_timestamp"), tz=col("timezone")
+            ),
         )
-        
+
         return registrations_with_local_timezones_df
-    
+
+    def join_sessions_with_registrations(
+        self, sessions_df: DataFrame, registrations_with_local_timezones_df: DataFrame
+    ) -> DataFrame:
+        return sessions_df.join(
+            other=registrations_with_local_timezones_df, how="left", on="user_id"
+        )
+
     def pair_matches(self, matches_df: DataFrame) -> DataFrame:
         match_start_df = matches_df.filter(col("match_status") == "match_start").select(
             "match_id",
@@ -31,5 +41,5 @@ class Joiner():
             col("match_timestamp").alias("end_time"),
         )
         paired_matches = match_start_df.join(match_end_df, "match_id")
-        
+
         return paired_matches

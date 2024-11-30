@@ -1,15 +1,17 @@
-import pytest
-from pyspark.sql import SparkSession, DataFrame
-from pyspark_test import assert_pyspark_df_equal
 from datetime import datetime
+
+import pytest
 from load.analyzer import Analyzer
 from load.schema import match_stats_schema
+from pyspark.sql import DataFrame, SparkSession
+from pyspark_test import assert_pyspark_df_equal
 from tests.data import DataGenerator
+
 
 class TestAnalyzer:
     @pytest.fixture(scope="session")
     def spark(self) -> SparkSession:
-        return SparkSession.builder.appName('load_test_session').getOrCreate()
+        return SparkSession.builder.appName("load_test_session").getOrCreate()
 
     @pytest.fixture(scope="session")
     def analyzer(self, spark) -> Analyzer:
@@ -21,7 +23,7 @@ class TestAnalyzer:
 
     def test_calculate_user_match_points(self, spark, analyzer, test_data) -> None:
         paired_match_df: DataFrame = test_data.get_paired_match_test_data()
-        
+
         expected_data = [
             {
                 "match_id": "290d5196-9123-11ef-b02f-bafd2d38177c",
@@ -38,13 +40,15 @@ class TestAnalyzer:
         ]
 
         result_df: DataFrame = analyzer.calculate_user_match_points(paired_match_df)
-        expected_df = spark.createDataFrame(data=expected_data, schema=match_stats_schema)
+        expected_df = spark.createDataFrame(
+            data=expected_data, schema=match_stats_schema
+        )
 
         assert_pyspark_df_equal(result_df, expected_df)
 
     def test_calculate_match_duration(self, spark, analyzer, test_data) -> None:
         paired_match_df: DataFrame = test_data.get_paired_match_test_data()
-        
+
         expected_data = [
             {
                 "match_id": "290d5196-9123-11ef-b02f-bafd2d38177c",
@@ -54,12 +58,14 @@ class TestAnalyzer:
                 "away_goals_scored": 0,
                 "start_time": datetime.fromtimestamp(1728390690),
                 "end_time": datetime.fromtimestamp(1728390791),
-                "match_duration": 1728390791-1728390690,
+                "match_duration": 1728390791 - 1728390690,
                 "home_user_points": None,
                 "away_user_points": None,
             }
         ]
         result_df: DataFrame = analyzer.calculate_match_time(paired_match_df)
 
-        expected_df = spark.createDataFrame(data=expected_data, schema=match_stats_schema)
+        expected_df = spark.createDataFrame(
+            data=expected_data, schema=match_stats_schema
+        )
         assert_pyspark_df_equal(result_df, expected_df)

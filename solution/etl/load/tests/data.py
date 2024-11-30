@@ -1,6 +1,8 @@
-from pyspark.sql import SparkSession, DataFrame
-from load.schema import match_schema, match_stats_schema
 from datetime import datetime
+
+from load.schema import match_schema, match_stats_schema
+from pyspark.sql import DataFrame, SparkSession
+
 
 class DataGenerator:
     def __init__(self, spark: SparkSession):
@@ -27,9 +29,9 @@ class DataGenerator:
                 "away_goals_scored": 0,
                 "match_timestamp": datetime.fromtimestamp(1728390791),
                 "match_status": "match_end",
-            }
+            },
         ]
-        return self.spark.createDataFrame(data = data, schema=match_schema)
+        return self.spark.createDataFrame(data=data, schema=match_schema)
 
     def get_paired_match_test_data(self) -> DataFrame:
         data = [
@@ -47,4 +49,4 @@ class DataGenerator:
             }
         ]
 
-        return self.spark.createDataFrame(data = data, schema=match_stats_schema)
+        return self.spark.createDataFrame(data=data, schema=match_stats_schema)

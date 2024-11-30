@@ -63,7 +63,7 @@ class QueryGenerator:
                         GROUP BY user_id
                     ),
                     session_duration as (
-                        SELECT 
+                        SELECT
                                 user_id,
                                 COUNT(*) * 60 AS total_seconds
                         FROM user_session_stats
@@ -102,8 +102,8 @@ class QueryGenerator:
                     COALESCE(g.time_spent_in_game, 0) AS time_spent_in_game,
                     COALESCE(g.total_points_won_home, 0) AS total_points_won_home,
                     COALESCE(g.total_points_won_away, 0) AS total_points_won_away,
-                    CASE 
-                        WHEN COALESCE(s.total_session_duration, 0) > 0 THEN 
+                    CASE
+                        WHEN COALESCE(s.total_session_duration, 0) > 0 THEN
                             (COALESCE(CAST(g.time_spent_in_game AS FLOAT), 0) / CAST(s.total_session_duration AS FLOAT)) * 100
                         ELSE 0
                     END AS match_time_as_percentage_of_total_game_time
@@ -160,7 +160,7 @@ class QueryGenerator:
                         GROUP BY user_id
                     ),
                     session_duration as (
-                        SELECT 
+                        SELECT
                             user_id,
                             COUNT(*) * 60 AS total_seconds
                         FROM user_session_stats
@@ -198,8 +198,8 @@ class QueryGenerator:
                     COALESCE(g.time_spent_in_game, 0) AS time_spent_in_game,
                     COALESCE(g.total_points_won_home, 0) AS total_points_won_home,
                     COALESCE(g.total_points_won_away, 0) AS total_points_won_away,
-                    CASE 
-                        WHEN COALESCE(s.total_session_duration, 0) > 0 THEN 
+                    CASE
+                        WHEN COALESCE(s.total_session_duration, 0) > 0 THEN
                             (COALESCE(CAST(g.time_spent_in_game AS FLOAT), 0) / CAST(s.total_session_duration AS FLOAT)) * 100
                         ELSE 0
                     END AS match_time_as_percentage_of_total_game_time

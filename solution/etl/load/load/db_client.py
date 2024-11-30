@@ -1,7 +1,16 @@
-from load.constants import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_DRIVER, DB_URL
+from load.constants import (
+    DB_DRIVER,
+    DB_HOST,
+    DB_NAME,
+    DB_PASSWORD,
+    DB_PORT,
+    DB_URL,
+    DB_USER,
+)
 from pyspark.sql import DataFrame
 
-class DBClient():
+
+class DBClient:
     def __init__(self):
         self.host = DB_HOST
         self.port = DB_PORT
@@ -15,6 +24,6 @@ class DBClient():
         properties = {
             "user": self.user,
             "password": self.password,
-            "driver": self.driver
+            "driver": self.driver,
         }
         dataset.write.jdbc(DB_URL, table_name, mode="overwrite", properties=properties)
