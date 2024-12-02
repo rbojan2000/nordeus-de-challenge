@@ -195,7 +195,7 @@ class QueryGenerator:
                     s.registration_local_datetime,
                     s.days_since_last_login,
                     s.number_of_sessions,
-                    COALESCE(g.time_spent_in_game, 0) AS time_spent_in_game,
+                    COALESCE(s.total_session_duration, 0) AS time_spent_in_game,
                     COALESCE(g.total_points_won_home, 0) AS total_points_won_home,
                     COALESCE(g.total_points_won_away, 0) AS total_points_won_away,
                     CASE

@@ -16,7 +16,10 @@ from transformation.processor import (
     help="Specify the dataset to transform",
 )
 def run(dataset_name: str) -> None:
-    spark = SparkSession.builder.appName("transformation").getOrCreate()
+    spark = SparkSession.builder \
+        .appName("transformation") \
+        .config("spark.sql.session.timeZone", "UTC") \
+        .getOrCreate()
 
     if dataset_name == "session_ping":
         df = transform_session(spark, dataset_name)
